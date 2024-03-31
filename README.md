@@ -2,7 +2,6 @@
 나무마크를 ast로 파싱하는 라이브러리.
 
 아직 없는 기능
- * 인용문 - 리스트(구조 때문에 별도)
  * @param=default value@
  * redirect
 

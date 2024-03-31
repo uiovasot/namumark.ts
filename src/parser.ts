@@ -484,6 +484,15 @@ export class Parser {
                 let currentNode: Node = node;
                 let currentDepth = 1;
 
+                // 인용문-리스트
+                let inList = false;
+
+                let listNode: Node;
+
+                let list: {node: Node, depth: number}[] = [];
+                let currentListNode: Node = node;
+                let currentListDepth = 1;
+
                 while(this.tokens[this.cursor]){
                     if(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '>'){
                         this.cursor++;
@@ -491,6 +500,8 @@ export class Parser {
                         while(this.tokens[this.cursor]?.type === 'rule' && this.tokens[this.cursor]?.value === '>') depth++, this.cursor++;
 
                         if(currentDepth < depth){
+                            if(inList) inList = false;
+
                             for(let i = 0; i < depth-currentDepth; i++){
                                 const Quote = new Node('Quote', {items: [], depth: currentDepth+i});
 
@@ -505,6 +516,8 @@ export class Parser {
                                 });
                             }
                         } else if(currentDepth > depth){
+                            if(inList) inList = false;
+
                             const findNode = quotes.filter(item => item.depth === (depth-1)).pop();
                             if(findNode) currentNode = findNode.node, currentDepth = depth;
                         }
@@ -512,8 +525,89 @@ export class Parser {
                         if(this.tokens[this.cursor].value === '\n'){
                             currentNode.items.push(new Node('Literal', {value: '\n'}));
                         } else {
-                            while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                                currentNode.items.push(await this.walk());
+                            if((inList && this.tokens[this.cursor].value === ' ') || (this.tokens[this.cursor].value === ' ' && this.tokens[this.cursor+1].type === 'rule' && lists.includes(this.tokens[this.cursor+1].value))){
+                                if(!inList){
+                                    inList = true;
+
+                                    listNode = new Node('List', {depth: 0, items: [], param: {}});
+
+                                    list = [{node, depth: 0}];
+                                    currentListNode = listNode;
+                                    currentListDepth = 1;
+
+                                    currentNode.items.push(listNode);
+                                }
+
+                                this.cursor++;
+                                let depth = 1;
+                                while(this.tokens[this.cursor]?.value === ' ') depth++, this.cursor++;
+
+                                const identifier = this.tokens[this.cursor]?.value;
+
+                                if(!lists.includes(identifier)){
+                                    const currentItem = currentListNode.items[currentListNode.items.length - 1];
+
+                                    currentItem.items.push(new Node('Literal', {value: '\n'}));
+                
+                                    while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
+                                        currentItem.items.push(await this.walk());
+                                    }
+
+                                    continue;
+                                }
+
+                                this.cursor++;
+
+                                if(currentListDepth < depth){
+                                    for(let i = 0; i < depth-currentListDepth; i++){
+                                        const item = new Node('List', {items: [], depth: currentListDepth+i, param: {}});
+
+                                        currentListNode.items.push(item);
+
+                                        currentListDepth = depth;
+                                        currentListNode = item;
+
+                                        list.push({
+                                            node: currentListNode,
+                                            depth
+                                        });
+                                    }
+                                } else if(currentListDepth > depth){
+                                    const findNode = list.filter(item => item.depth === (depth-1)).pop();
+                                    if(findNode) currentListNode = findNode.node, currentListDepth = depth;
+                                }
+
+                                if(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '#'){
+                                    this.cursor++;
+
+                                    currentListNode.param['start'] = '';
+
+                                    while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== ' '){
+                                        currentListNode.param['start'] += this.tokens[this.cursor].value;
+
+                                        this.cursor++;
+                                    }
+
+                                    this.cursor++;
+                                }
+
+                                const currentItem = new Node('ListItem', {items: [], name: identifier});
+
+                                if(this.tokens[this.cursor].value === '\n'){
+                                    currentItem.items.push(new Node('Literal', {value: '\n'}));
+                                } else {
+                                    while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
+                                        currentItem.items.push(await this.walk());
+                                    }
+                                }
+
+                                currentListNode.items.push(currentItem);
+                            } else {
+                                if(inList) inList = false;
+
+                                while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
+                                    currentNode.items.push(await this.walk());
+                                }
                             }
                         }
                         this.cursor++;
@@ -695,7 +789,7 @@ export class Parser {
                 let currentDepth = 1;
 
                 while(this.tokens[this.cursor]){
-                    if(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === ' '){
+                    if(this.tokens[this.cursor].value === ' '){
                         this.cursor++;
                         let depth = 1;
                         while(this.tokens[this.cursor]?.value === ' ') depth++, this.cursor++;
