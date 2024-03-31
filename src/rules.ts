@@ -10,12 +10,15 @@ let rules: string[] = [
     "||", '<-', '<:>', '<width=', '<height=', '<|', '<(>', '<)>', '<^|', '<v|', '<nopad>',
     '<tablewidth=', '<table width=', '<bgcolor=', '<colbgcolor=', '<rowbgcolor=', '<tablebgcolor=', '<table bgcolor=',
     '<color=', '<color', '<colcolor=', '<rowcolor=', '<tablecolor=', '<table color=', '<tablebordercolor=', '<table bordercolor=', 
-    '<tablealign=left>', '<table align=left>', '<tablealign=center>', '<table align=center>', '<tablealign=right>', '<table align=right>'
+    '<tablealign=left>', '<table align=left>', '<tablealign=center>', '<table align=center>', '<tablealign=right>', '<table align=right>',
+
+    "*", "1.", "a.", "A.", "i.", 'I.', '#'
 ];
 
 rules.sort((a, b) => b.length - a.length);
 
 export const textRules: {[str: string]: string} = {"'''": 'Bold', "''": 'Italic', "__": 'Underscore', "~~": 'Strikethrough', "--": 'Strikethrough', "^^": 'SuperScript', ",,": 'SubScript'};
 export const videos = ["[youtube(", "[kakaotv(", "[nicovideo(", "[vimeo(", "[navertv("];
+export const lists = ["*", "1.", "a.", "A.", "i.", 'I.'];
 
 export default rules;
