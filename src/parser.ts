@@ -73,7 +73,7 @@ export class Parser {
         return param;
     }
 
-    private async tableParam(){
+    private tableParam(){
         let param = '';
 
         this.cursor++;
@@ -89,7 +89,7 @@ export class Parser {
         return param;
     }
 
-    private async table(){
+    private table(){
         const node = new Node('Table', {items: [], param: {}, value: ''});
 
         let currentRow: Node = new Node('TableRow', {items: [], param: {}});
@@ -100,7 +100,7 @@ export class Parser {
             param: while(this.tokens[this.cursor] && this.tokens[this.cursor].type === "rule"){
                 switch(this.tokens[this.cursor].value){
                     case '<-':
-                        currentCell.param['colspan'] = await this.tableParam();
+                        currentCell.param['colspan'] = this.tableParam();
 
                         break;
 
@@ -112,17 +112,17 @@ export class Parser {
                                                               'bottom';
 
 
-                        currentCell.param['rowspan'] = await this.tableParam();
+                        currentCell.param['rowspan'] = this.tableParam();
     
                         break;
                     
                     case '<width=':
-                        currentCell.param['width'] = await this.tableParam();
+                        currentCell.param['width'] = this.tableParam();
 
                         break;
 
                     case '<height=':
-                        currentCell.param['height'] = await this.tableParam();
+                        currentCell.param['height'] = this.tableParam();
     
                         break;
 
@@ -146,56 +146,56 @@ export class Parser {
                     
                     case '<tablewidth=':
                     case '<table width=':
-                        node.param['width'] = await this.tableParam();
+                        node.param['width'] = this.tableParam();
 
                         break;
                     
                     case '<bgcolor=':
-                        currentCell.param['bgcolor'] = await this.tableParam();
+                        currentCell.param['bgcolor'] = this.tableParam();
 
                         break;
 
                     case '<colbgcolor=':
-                        currentCell.param['colbgcolor'] = await this.tableParam();
+                        currentCell.param['colbgcolor'] = this.tableParam();
     
                         break;
 
                     case '<rowbgcolor=':
-                        currentRow.param['bgcolor'] = await this.tableParam();
+                        currentRow.param['bgcolor'] = this.tableParam();
         
                         break;
                     
                     case '<tablebgcolor=':
                     case '<table bgcolor=':
-                        node.param['bgcolor'] = await this.tableParam();
+                        node.param['bgcolor'] = this.tableParam();
             
                         break;
 
                     case '<color=':
                     case '<color':
-                        currentCell.param['color'] = await this.tableParam();
+                        currentCell.param['color'] = this.tableParam();
                 
                         break;
 
                     case '<colcolor=':
-                        currentCell.param['colcolor'] = await this.tableParam();
+                        currentCell.param['colcolor'] = this.tableParam();
                 
                         break;
 
                     case '<rowcolor=':
-                        currentRow.param['color'] = await this.tableParam();
+                        currentRow.param['color'] = this.tableParam();
                 
                         break;
                     
                     case '<tablecolor=':
                     case '<table color=':
-                        node.param['color'] = await this.tableParam();
+                        node.param['color'] = this.tableParam();
                 
                         break;
 
                     case '<tablebordercolor=':
                     case '<table bordercolor=':
-                        node.param['bordercolor'] = await this.tableParam();
+                        node.param['bordercolor'] = this.tableParam();
                 
                         break;
 
@@ -219,7 +219,7 @@ export class Parser {
             }
 
             while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '||')){
-                currentCell.items.push(await this.walk());
+                currentCell.items.push(this.walk());
             }
 
             this.cursor++;
@@ -241,16 +241,16 @@ export class Parser {
         return node;
     }
 
-    private async walk(){
-        const token = this.tokens[this.cursor];
+    private walk(){
+        const token = this.tokens[this.cursor];console.log(token)
         if(token.type === 'rule'){
             if(token.heading){
-                const node = new Node('Heading', {depth: token.heading.depth, folding: token.heading.folding});
+                const node = new Node('Heading', {items: [], depth: token.heading.depth, folding: token.heading.folding});
 
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !this.tokens[this.cursor].heading){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -262,7 +262,7 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '}}}')){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -288,13 +288,13 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                    node.names.push(await this.walk());
+                    node.names.push(this.walk());
                 }
 
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '}}}')){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -327,7 +327,7 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '}}}')){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -339,7 +339,7 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '}}}')){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -382,7 +382,7 @@ export class Parser {
                     this.cursor++;
 
                     while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === ']]')){
-                        node.items.push(await this.walk());
+                        node.items.push(this.walk());
                     }
                 } else node.items.push(new Node('Literal', {value: node.link}));
 
@@ -429,7 +429,7 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === token.value)){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -471,7 +471,7 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === ']')){
-                    node.items.push(await this.walk());
+                    node.items.push(this.walk());
                 }
 
                 this.cursor++;
@@ -503,7 +503,7 @@ export class Parser {
                             if(inList) inList = false;
 
                             for(let i = 0; i < depth-currentDepth; i++){
-                                const Quote = new Node('Quote', {items: [], depth: currentDepth+i});
+                                const Quote = new Node('BlockQuote', {items: [], depth: currentDepth+i});
 
                                 currentNode.items.push(Quote);
 
@@ -550,7 +550,7 @@ export class Parser {
                                     currentItem.items.push(new Node('Literal', {value: '\n'}));
                 
                                     while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                                        currentItem.items.push(await this.walk());
+                                        currentItem.items.push(this.walk());
                                     }
 
                                     continue;
@@ -597,7 +597,7 @@ export class Parser {
                                     currentItem.items.push(new Node('Literal', {value: '\n'}));
                                 } else {
                                     while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                                        currentItem.items.push(await this.walk());
+                                        currentItem.items.push(this.walk());
                                     }
                                 }
 
@@ -606,7 +606,7 @@ export class Parser {
                                 if(inList) inList = false;
 
                                 while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                                    currentNode.items.push(await this.walk());
+                                    currentNode.items.push(this.walk());
                                 }
                             }
                         }
@@ -614,6 +614,48 @@ export class Parser {
                     } else break;
                 }
 
+                return node;
+            } else if(token.value === '\n' && this.tokens[this.cursor+1].value === ' '){
+                const node = new Node('Indent', {depth: 0, items: []});
+                const indents: {node: Node, depth: number}[] = [{node, depth: 0}];
+
+                let currentNode: Node = node;
+                let currentDepth = 1;
+
+                this.cursor++;
+
+                while(this.tokens[this.cursor]){
+                    if(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === ' '){
+                        this.cursor++;
+                        let depth = 1;
+                        while(this.tokens[this.cursor]?.type === 'rule' && this.tokens[this.cursor]?.value === ' ') depth++, this.cursor++;
+                        if(currentDepth < depth){
+                            for(let i = 0; i < depth-currentDepth; i++){
+                                const indent = new Node('Indent', {items: [], depth: currentDepth+i});
+
+                                currentNode.items.push(indent);
+                                currentDepth = depth;
+                                currentNode = indent;
+
+                                indents.push({
+                                    node: currentNode,
+                                    depth
+                                });
+                            }
+                        } else if(currentDepth > depth){
+                            const findNode = indents.filter(item => item.depth === (depth-1)).pop();
+                            if(findNode) currentNode = findNode.node, currentDepth = depth;
+                        }
+                        if(this.tokens[this.cursor].value === '\n'){
+                            currentNode.items.push(new Node('Literal', {value: '\n'}));
+                        } else {
+                            while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
+                                currentNode.items.push(this.walk());
+                            }
+                        }
+                        this.cursor++;
+                    } else break;
+                }
                 return node;
             } else if(token.value === '[include('){
                 const node = new Node('Include', {name: '', param: {}});
@@ -683,7 +725,7 @@ export class Parser {
                 this.cursor++;
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && (this.tokens[this.cursor].value === ',' || this.tokens[this.cursor].value === ')]'))){
-                    node.names.push(await this.walk());
+                    node.names.push(this.walk());
                 }
 
                 if(this.tokens[this.cursor].value === ','){
@@ -762,7 +804,7 @@ export class Parser {
             } else if(token.value === '||'){
                 this.cursor++;
 
-                return await this.table();
+                return this.table();
             } else if(token.value === '|'){
                 this.cursor++
 
@@ -776,7 +818,7 @@ export class Parser {
 
                 this.cursor++;
 
-                const table = await this.table();
+                const table = this.table();
 
                 table.value = caption;
 
@@ -802,7 +844,7 @@ export class Parser {
                             currentItem.items.push(new Node('Literal', {value: '\n'}));
            
                             while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                                currentItem.items.push(await this.walk());
+                                currentItem.items.push(this.walk());
                             }
 
                             continue;
@@ -849,7 +891,7 @@ export class Parser {
                             currentItem.items.push(new Node('Literal', {value: '\n'}));
                         } else {
                             while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
-                                currentItem.items.push(await this.walk());
+                                currentItem.items.push(this.walk());
                             }
                         }
 
@@ -867,12 +909,12 @@ export class Parser {
         return new Node('Literal', {value: token.toString()});
     }
 
-    public async run(tokens: Token[]){
+    public run(tokens: Token[]){
         this.tokens = tokens;
         this.cursor = 0;
 
         const nodes: Node[] = [];
-        while(this.tokens[this.cursor]) nodes.push(await this.walk());
+        while(this.tokens[this.cursor]) nodes.push(this.walk());
 
         return nodes;
     }

@@ -6,6 +6,6 @@ export {Tokenizer, Parser, Token, Node};
 export const tokenizer = new Tokenizer();
 export const parser = new Parser();
 
-export default async function parse(str: string){
-    return await parser.run(tokenizer.run(str));
+export default function parse(str: string){
+    return parser.run(tokenizer.run(str));
 }
