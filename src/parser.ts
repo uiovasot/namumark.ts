@@ -525,7 +525,7 @@ export class Parser {
                         if(this.tokens[this.cursor].value === '\n'){
                             currentNode.items.push(new Node('Literal', {value: '\n'}));
                         } else {
-                            if((inList && this.tokens[this.cursor].value === ' ') || (this.tokens[this.cursor].value === ' ' && this.tokens[this.cursor+1].type === 'rule' && lists.includes(this.tokens[this.cursor+1].value))){
+                            if((inList && this.tokens[this.cursor].value === ' ') || (this.tokens[this.cursor].value === ' ' && this.tokens[this.cursor+1]?.type === 'rule' && lists.includes(this.tokens[this.cursor+1]?.value))){
                                 if(!inList){
                                     inList = true;
 
@@ -615,7 +615,7 @@ export class Parser {
                 }
 
                 return node;
-            } else if(token.value === '\n' && this.tokens[this.cursor+1].value === ' '){
+            } else if(token.value === '\n' && this.tokens[this.cursor+1]?.value === ' '){
                 const node = new Node('Indent', {depth: 0, items: []});
                 const indents: {node: Node, depth: number}[] = [{node, depth: 0}];
 
@@ -823,7 +823,7 @@ export class Parser {
                 table.value = caption;
 
                 return table;
-            } else if(token.value === ' ' && this.tokens[this.cursor+1].type === 'rule' && lists.includes(this.tokens[this.cursor+1].value)){
+            } else if(token.value === ' ' && this.tokens[this.cursor+1].type === 'rule' && lists.includes(this.tokens[this.cursor+1]?.value)){
                 const node = new Node('List', {depth: 0, items: [], param: {}});
 
                 const list: {node: Node, depth: number}[] = [{node, depth: 0}];
