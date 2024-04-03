@@ -242,7 +242,7 @@ export class Parser {
     }
 
     private walk(){
-        const token = this.tokens[this.cursor];console.log(token)
+        const token = this.tokens[this.cursor];
         if(token.type === 'rule'){
             if(token.heading){
                 const node = new Node('Heading', {items: [], depth: token.heading.depth, folding: token.heading.folding});
