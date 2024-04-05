@@ -90,7 +90,7 @@ export class Parser {
     }
 
     private table(){
-        const node = new Node('Table', {items: [], param: {}, value: ''});
+        const node = new Node('Table', {items: [], param: {}, names: []});
 
         let currentRow: Node = new Node('TableRow', {items: [], param: {}});
 
@@ -677,6 +677,40 @@ export class Parser {
                 this.cursor++;
 
                 return node;
+            } else if(token.value === '@'){
+                const node = new Node('Param', {name: '', items: []});
+
+                const _cursor = ++this.cursor;
+
+                while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && (this.tokens[this.cursor].value === '=' || this.tokens[this.cursor].value === '@')) && this.tokens[this.cursor].value !== '\n'){
+                    node.name += this.tokens[this.cursor];
+
+                    this.cursor++;
+                }
+
+                if(!(this.tokens[this.cursor]?.type === 'rule' && (this.tokens[this.cursor].value === '=' || this.tokens[this.cursor].value === '@'))){
+                    this.cursor = _cursor;
+
+                    return new Node('Literal', {value: '@'});
+                }
+
+                if(this.tokens[this.cursor].value === '='){
+                    this.cursor++;
+
+                    while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '@') && this.tokens[this.cursor].value !== '\n'){
+                        node.items.push(this.walk());
+                    }
+    
+                    if(!(this.tokens[this.cursor]?.type === 'rule' && this.tokens[this.cursor].value === '@')){
+                        this.cursor = _cursor;
+    
+                        return new Node('Literal', {value: '@'});
+                    }
+                }
+
+                this.cursor++;
+
+                return node;
             } else if(token.value === '[age('){
                 const node = new Node('Age', {date: ''});
 
@@ -808,19 +842,17 @@ export class Parser {
             } else if(token.value === '|'){
                 this.cursor++
 
-                let caption = '';
+                let caption: Node[] = [];
 
                 while(this.tokens[this.cursor] && !(this.tokens[this.cursor].type === 'rule' && this.tokens[this.cursor].value === '|')){
-                    caption += this.tokens[this.cursor];
-
-                    this.cursor++;
+                    caption.push(this.walk());
                 }
 
                 this.cursor++;
 
                 const table = this.table();
 
-                table.value = caption;
+                table.names = caption;
 
                 return table;
             } else if(token.value === ' ' && this.tokens[this.cursor+1].type === 'rule' && lists.includes(this.tokens[this.cursor+1]?.value)){

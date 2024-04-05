@@ -12,7 +12,9 @@ let rules: string[] = [
     '<color=', '<color', '<colcolor=', '<rowcolor=', '<tablecolor=', '<table color=', '<tablebordercolor=', '<table bordercolor=', 
     '<tablealign=left>', '<table align=left>', '<tablealign=center>', '<table align=center>', '<tablealign=right>', '<table align=right>',
 
-    "*", "1.", "a.", "A.", "i.", 'I.', '#'
+    "*", "1.", "a.", "A.", "i.", 'I.', '#',
+
+    '@'
 ];
 
 rules.sort((a, b) => b.length - a.length);
