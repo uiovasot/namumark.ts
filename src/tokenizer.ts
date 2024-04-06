@@ -94,12 +94,14 @@ export class Tokenizer {
 
         root: for(; input.length > this.cursor; this.cursor++){
             if(input[this.cursor] === '\n'){
-                this.previousTokenPush();
-                this.tokens.push(new Token('\n', 'rule', {}));
-
-                this.newLine = true;
-
-                this.cursor++;
+                while(input[this.cursor] === '\n'){
+                    this.previousTokenPush();
+                    this.tokens.push(new Token('\n', 'rule', {}));
+    
+                    this.newLine = true;
+    
+                    this.cursor++;
+                }
             } else if(this.cursor > 0) this.newLine = false;
 
             if(input.length <= this.cursor) break;
@@ -171,7 +173,7 @@ export class Tokenizer {
                 this.previousTokenPush();
                 this.tokens.push(new Token(str, 'rule', {style}));
                     
-                continue root;
+                continue;
             }
 
             let size: string;
@@ -181,7 +183,7 @@ export class Tokenizer {
                 this.tokens.push(new Token(str, 'rule', {size: parseInt((!plus ? '-' : '+')+size, 10)}));
                 this.cursor += 5;
                     
-                continue root;
+                continue;
             }
 
             let color: string;
@@ -190,7 +192,16 @@ export class Tokenizer {
                 this.tokens.push(new Token(str, 'rule', {color: (color.match(/^(?:[0-9a-f]{3}){1,2}$/i) ? '#'+color : color)}));
                 this.cursor += str.length;
                     
-                continue root;
+                continue;
+            }
+
+            if(input.slice(this.cursor, this.cursor + 3) === '{{{'){
+                this.previousTokenPush();
+                this.tokens.push(new Token('{{{', 'rule', {}));
+
+                this.cursor += 2;
+
+                continue;
             }
 
             this.token += char;
