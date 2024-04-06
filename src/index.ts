@@ -1,7 +1,8 @@
 import {Tokenizer, Token} from "./tokenizer";
 import {Parser, Node} from "./parser";
+import {Renderer} from "./renderer";
 
-export {Tokenizer, Parser, Token, Node};
+export {Tokenizer, Parser, Renderer, Token, Node};
 
 export const tokenizer = new Tokenizer();
 export const parser = new Parser();

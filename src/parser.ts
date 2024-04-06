@@ -233,7 +233,7 @@ export class Parser {
 
                 this.cursor++;
 
-                if(this.tokens[this.cursor]?.value === '\n') break;
+                if(this.tokens[this.cursor]?.value !== '||') break;
                 this.cursor++;
             }
         }
@@ -934,6 +934,19 @@ export class Parser {
                 table.names = caption;
 
                 return table;
+            } else if(token.value === '\n' && this.tokens[this.cursor+1]?.value === '##'){
+                const node = new Node('Comment', {value: ''});
+
+                this.cursor++;
+                this.cursor++;
+
+                while(this.tokens[this.cursor] && this.tokens[this.cursor].value !== '\n'){
+                    node.value += this.tokens[this.cursor];
+                    
+                    this.cursor++;
+                }
+
+                return node;
             }
         }
         

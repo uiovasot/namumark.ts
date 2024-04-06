@@ -1,5 +1,7 @@
 let rules: string[] = [
-    "'''", "''", "__", "~~", "--", "^^", ",,", "{{{", "{{{#!folding", "{{{#!html", "{{{#!syntax ", "}}}",
+    "##",
+
+    "'''", "''", "__", "~~", "--", "^^", ",,", "{{{#!folding", "{{{#!html", "{{{#!syntax ", "}}}",
     "[[", "[[파일:", "[[분류:", "|", "=", "&", "]]",
     "[youtube(", "[kakaotv(", "[nicovideo(", "[vimeo(", "[navertv(", "[include(", "[age(", "[dday(", "[pagecount(", "[ruby(", "[math(", ",", ")]", 
     "[date]", "[datetime]", "[목차]", "[tableofcontents]", "[각주]", "[footnote]",

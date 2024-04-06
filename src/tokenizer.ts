@@ -118,12 +118,7 @@ export class Tokenizer {
             let str: string;
             const line = input.slice(this.cursor).split('\n')[0];
 
-            if(this.newLine && input.substring(this.cursor, this.cursor + 2) === '##'){
-                this.cursor += 2;
-
-                while(input[this.cursor] && input[this.cursor] !== '\n') this.cursor++;
-                continue;
-            } else if(this.newLine && (heading = this.isHeadingStart(line))){
+            if(this.newLine && (heading = this.isHeadingStart(line))){
                 const len = heading.depth + (heading.folding ? 2 : 1);
                 this.cursor += len-1;
                 this.heading = heading;
@@ -180,7 +175,7 @@ export class Tokenizer {
             let plus: boolean;
             if(((plus = (str = input.slice(this.cursor, this.cursor + 6)).startsWith('{{{+')) || str.startsWith('{{{-')) && str.endsWith(' ') && !isNaN(+(size = str.slice(4, 5)))){
                 this.previousTokenPush();
-                this.tokens.push(new Token(str, 'rule', {size: parseInt((!plus ? '-' : '+')+size, 10)}));
+                this.tokens.push(new Token(str+' ', 'rule', {size: parseInt((!plus ? '-' : '+')+size, 10)}));
                 this.cursor += 5;
                     
                 continue;
@@ -189,7 +184,7 @@ export class Tokenizer {
             let color: string;
             if((str = input.slice(this.cursor, this.cursor + 21).split(' ')[0]).startsWith('{{{#') && (color = str.slice(4))){
                 this.previousTokenPush();
-                this.tokens.push(new Token(str, 'rule', {color: (color.match(/^(?:[0-9a-f]{3}){1,2}$/i) ? '#'+color : color)}));
+                this.tokens.push(new Token(str+' ', 'rule', {color: (color.match(/^(?:[0-9a-f]{3}){1,2}$/i) ? '#'+color : color)}));
                 this.cursor += str.length;
                     
                 continue;
