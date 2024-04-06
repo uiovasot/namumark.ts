@@ -5,5 +5,9 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "highlight.js": "^11.9.0",
+    "isomorphic-dompurify": "^2.6.0"
   }
 }
