@@ -345,7 +345,7 @@ export class Parser {
                 this.cursor++;
 
                 return node;
-            } else if(token.value.startsWith('-')){
+            } else if(token.value.match(/^-{4,9}$/)){
                 const node = new Node('HorizontalLine', {});
                 
                 this.cursor++;
